@@ -64,11 +64,11 @@ movies = [
 
 from flask import Flask, render_template
 
-@app.route('/')
-def index():
-    user = User.query.first()  # 读取用户记录
-    movies = Movie.query.all()  # 读取所有电影记录
-    return render_template('index.html', user=user, movies=movies)
+# @app.route('/')
+# def index():
+#     user = User.query.first()  # 读取用户记录
+#     movies = Movie.query.all()  # 读取所有电影记录
+#     return render_template('index.html', user=user, movies=movies)
 
 # if __name__ == '__main__':
 #     app.run(debug=True,host='0.0.0.0',port=5000)
@@ -129,3 +129,35 @@ def forge():
 
     db.session.commit()
     click.echo('Done.')
+
+# @app.errorhandler(404)  # 传入要处理的错误代码
+# def page_not_found(e):  # 接受异常对象作为参数
+#     user = User.query.first()
+#     return render_template('404.html', user=user), 404  # 返回模板和状态码
+
+# @app.context_processor
+# def inject_user():  # 函数名可以随意修改
+#     user = User.query.first()
+#     return dict(user=user)  # 需要返回字典，等同于 return {'user': user}
+
+
+@app.context_processor
+def inject_user():
+    user = User.query.first()
+    return dict(user=user)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+@app.route('/')
+def index():
+    movies = Movie.query.all()
+    return render_template('index.html', movies=movies)
+
+
+
+if __name__ == '__main__':
+    app.run(debug=True,host='0.0.0.0',port=5000)
